@@ -12,11 +12,17 @@
         #text{
             background-color:#ffffff80;
             position:relative;
+            font: bold 13px arial, helvetica, sans-serif;
+            text-decoration: none;
+            text-shadow: 0 1px 0 rgba(0,0,0,.2);
         }
         #group{
             position:absolute;
             bottom:0px;
         }
+    </style>
+    <style type="text/css">
+        @import url("button.css");
     </style>
     <script src="script.txt" charset="utf-8"></script>
 </head>
@@ -68,10 +74,10 @@
                 s="";
                 for(i=0;i<w.length;i++){
                     if(w[i][1]=="null"||w[i][1]==null){
-                        s+="<button onclick='ask=0'>"+w[i][0]+"</button>";
+                        s+="<button class='large blue button' onclick='ask=0'>"+w[i][0]+"</button>";
                     }
                     else{
-                        s+="<button onclick='scene=game.scene."+w[i][1]+";step=0;ask=0;'>"+w[i][0]+"</button>";
+                        s+="<button class='large blue button' onclick='scene=game.scene."+w[i][1]+";step=0;ask=0;'>"+w[i][0]+"</button>";
                     }
                 }
                 text.innerHTML=s;
@@ -85,13 +91,17 @@
     text=document.getElementById("text");
     w=document.body.clientWidth*0.95;
     h=w*3/4;
+    if(h>document.body.clientHeight*0.95){
+        h=document.body.clientHeight*0.95;
+        w=h*4/3;
+    }
     back.style.width=w+"px";
     back.style.height=h+"px";
     img.style.width=w/6+"px";
     img.style.height=w/3+"px";
     text.style.width=w+"px";
     text.style.height=h/3+"px";
-    text.style.fontSize=w/20+"px";
+    text.style.fontSize=w/25+"px";
     scene=null;
     step=0;
     ask=0;

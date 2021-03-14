@@ -8,6 +8,7 @@ game={
     },
     "setting":{
         "startScene":"s1",
+        "textColor":"#ffff9980",
     },
     "scene":{
         "s1":[

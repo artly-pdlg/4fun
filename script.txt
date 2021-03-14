@@ -1,0 +1,39 @@
+game={
+    "background":{
+        "back":"background.jpg",
+    },
+    "image":{
+        "a1":"a1.jpg",
+        "b1":"b1.jpg",
+    },
+    "setting":{
+        "startScene":"s1",
+    },
+    "scene":{
+        "s1":[
+            "#back",
+            "@null",
+            "庄子与惠子游于濠梁之上",
+            "@a1",
+            "鲦鱼出游从容，是鱼之乐也",
+            "@b1",
+            "子非鱼，安知鱼之乐",
+            function(){
+                game.s1="我不知鱼之乐";
+                game.s2="我不知汝不知鱼之乐";
+                game.gotoScene("s2");
+            },      
+        ],
+        "s2":[
+            "@a1",
+            function(){return "子非我，安知"+game.s1;},
+            "@b1",
+            function(){return "子非我，安知"+game.s2;},
+            function(){
+                game.s1="我不知汝不知"+game.s1;
+                game.s2="我不知汝不知"+game.s2;
+                game.gotoScene("s2");
+            },
+        ],  
+    },
+}

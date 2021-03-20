@@ -2,9 +2,25 @@ game={
     "background":{
         "back":"background.jpg",
     },
-    "image":{
-        "a1":"a1.jpg",
-        "b1":"b1.jpg",
+    "character":{
+        "Hakurei_Reimu":{
+            "image":"a.jpg",
+            "name":"Hakurei Reimu",
+            "hp":12,
+            "atk":"2d5",
+        },
+        "Youmu_Konpaku":{
+             "image":"b.jpg",
+             "name":"Youmu Konpaku",
+             "hp":12,
+             "atk":"1d6",
+        },
+        "You":{
+            "image":"you.jpg",
+            "name":"你",
+            "hp":10,
+            "atk":"1d4",
+        },
     },
     "setting":{
         "startScene":"s1",
@@ -13,29 +29,54 @@ game={
     "scene":{
         "s1":[
             "#back",
-            "@null",
-            [["你好",null],["很高兴认识你",null]],
-            "庄子与惠子游于濠梁之上",
-            "@a1",
-            "鲦鱼出游从容，是鱼之乐也",
-            "@b1",
-            "子非鱼，安知鱼之乐",
-            function(){
-                game.s1="我不知鱼之乐";
-                game.s2="我不知汝不知鱼之乐";
-                game.gotoScene("s2");
-            },      
+            "@Hakurei_Reimu",
+            "你好",
+            [["杀害",function(){game.goto("fight");}],["你是...",null]],
+            "@You",
+            "你是...",
         ],
-        "s2":[
-            "@a1",
-            function(){return "子非我，安知"+game.s1;},
-            "@b1",
-            function(){return "子非我，安知"+game.s2;},
+        "fight":[
+            "「你」攻击了「Hakurei Reimu」",
             function(){
-                game.s1="我不知汝不知"+game.s1;
-                game.s2="我不知汝不知"+game.s2;
-                game.gotoScene("s2");
+                return "伤害判定 "+game.character.You.atk+"=";
             },
-        ],  
+            function(){
+                game.atk=game.getD(game.character.You.atk);
+                return "伤害判定 "+game.character.You.atk+"="+game.atk;
+            },
+            function(){
+                return "「Hakurei Reimu」hp="
+                +game.character.Hakurei_Reimu.hp+"-"+game.atk
+                +"="+(game.character.Hakurei_Reimu.hp-=game.atk);
+            },
+            function(){
+                if(game.character.Hakurei_Reimu.hp<=0)game.goto("win");
+            },
+            "「Hakurei Reimu」攻击了「你」",
+            function(){
+                return "伤害判定 "+game.character.Hakurei_Reimu.atk+"=";
+            },
+            function(){
+                game.atk=game.getD(game.character.Hakurei_Reimu.atk);
+                return "伤害判定 "+game.character.Hakurei_Reimu.atk+"="+game.atk;
+            },
+            function(){
+                return "「你」hp="
+                +game.character.You.hp+"-"+game.atk
+                +"="+(game.character.You.hp-=game.atk);
+            },
+            function(){
+                if(game.character.You.hp<=0)game.goto("lost");
+                else game.goto("fight");
+            },
+        ],
+        "win":[
+            "@Hakurei_Reimu",
+            "算你赢一次...",
+        ],
+        "lost":[
+            "@Hakurei_Reimu",
+            "就这?",
+        ],
     },
 }

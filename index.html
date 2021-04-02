@@ -89,6 +89,7 @@
     trackCtx=trackDOM.getContext("2d");
     trackDown=[false,false,false,false];
     offset=map.note.pop().offset;
+    if(typeof(offset)=="undefined")offset=0;
     bpm=map.time[0].bpm;
     combo=0;
     eval="";
@@ -114,6 +115,8 @@
             dt=(n.beat[0]+n.beat[1]/n.beat[2])*60000/bpm+startTime-time-offset;
             if(dt<-acc.good){
                 delete map.note[i];
+                combo=0;
+                eval="loss";
             }
             else{
                 trackCtx.fillRect(n.column*w/4,h*0.9-dt*h/1000,w/4,10);

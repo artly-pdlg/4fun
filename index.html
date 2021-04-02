@@ -1,152 +1,168 @@
 <head>
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,charset=utf-8"/>
-    <style type="text/css">
-        #back{
-            position:relative;
-            background-size:cover;
-        }
-        #img{
-            position:relative;
-            display:none;
-        }
-        #text{
-            background-color:#ffffff80;
-            position:relative;
-            font: bold 13px arial, helvetica, sans-serif;
-            text-decoration: none;
-            text-shadow: 0 1px 0 rgba(0,0,0,.2);
-        }
-        #group{
-            position:absolute;
-            bottom:0px;
-        }
-    </style>
-    <style type="text/css">
-        @import url("button.css");
-    </style>
-    <script src="script.txt" charset="utf-8"></script>
 </head>
-<body>
-    <div id="back">
-        <div id="group">
-            <img id="img">
-            <div id="text"></div>
-        <div>
-    </div>   
-</body>
-<script>
-    function Rnd(min, max) {
-        return Math.floor(Math.random() * (max - min) ) + min;
+<style>
+    *{
+        margin:0;
+        padding:0;
     }
-    function loadAndRun(){
-        ps=[];
-        for(i in game.background){
-            ps.push(game.background[i]);
-        }
-        for(i in game.character){
-            ps.push(game.character[i].image);
-        }
-        text.innerHTML="读取中(0/"+ps.length+")...";
-        
-        for(i in ps){
-            p=new Image();
-            p.src=ps[i];
-            p.onload=function(){
-                imgN++;
-                if(imgN==ps.length)run();
-                else text.innerHTML="读取中("+imgN+"/"+ps.length+")...";
+    #main{
+        position:relative;
+    }
+    .trackarea{
+       flex:1;
+       position:relative;
+       height:100%;
+    }
+    #toucharea{
+        width:100%;
+        height:100%;
+        display:flex;
+        flex-direction:row;
+        position:absolute;
+        top:0;
+        left:0;
+        z-index:1;
+    }
+    #track{
+        position:absolute;
+        top:0;
+        left:0;
+        z-index:0;
+    }
+    #game{
+        display:none;
+    }
+    #start{
+        width:100%;
+        height:100%;
+        display:box;
+        display:-ms-flexbox;
+        -ms-flex-pack:center;
+        -ms-flex-align:center;
+        display:-moz-box;
+        -moz-box-pack:center;
+        -moz-box-align:center;
+        display:-webkit-box;
+        -webkit-box-pack:center;
+        -webkit-box-align:center;
+        display:box;
+        box-pack:center;
+        box-align:center;
+    }
+</style>
+<body>
+    <div id="main">
+        <div id="start">START</div>
+        <div id="game">
+        <div id="toucharea">
+            <div class="trackarea" id="0"></div>
+            <div class="trackarea" id="1"></div>
+            <div class="trackarea" id="2"></div>
+            <div class="trackarea" id="3"></div>
+        </div>
+        <canvas id="track"></canvas>
+        </div>
+    </div>
+    <audio id="music" src="music.ogg"></audio>
+</body>
+<script src="map.txt" charset="utf-8"></script>
+<script>
+    mainDOM=document.getElementById("main");
+    musicDOM=document.getElementById("music");
+    trackDOM=document.getElementById("track");
+    startDOM=document.getElementById("start");
+    gameDOM=document.getElementById("game");
+    trackAreaDOM=document.getElementsByClassName("trackarea");
+    w=document.body.clientWidth;
+    h=document.body.clientHeight;
+    mainDOM.style.width=w;
+    mainDOM.style.height=h;
+    trackDOM.width=w;
+    trackDOM.height=h;
+    acc={
+            "best":51,
+            "cool":76,
+            "good":110,
+            "miss":150,
+        };
+    trackCtx=trackDOM.getContext("2d");
+    trackDown=[false,false,false,false];
+    offset=map.note.pop().offset;
+    bpm=map.time[0].bpm;
+    combo=0;
+    eval="";
+    T=0;
+    trackCtx.textAlign="center";
+    trackCtx.textBaseline="middle";
+    function draw(time){
+        T=time;
+        if(typeof(startTime)=="undefined")startTime=time;
+        trackCtx.clearRect(0,0,w,h);
+        trackCtx.save();
+        trackCtx.fillStyle="#c9daf8";
+        for(i=0;i<4;i++){
+            if(trackDown[i]){
+                trackCtx.fillRect(i*w/4,0,w/4,h);
             }
         }
-    }
-    function setting(){    
-        scene=game.scene[game.setting.startScene];
-        if(game.setting.textColor!=null){
-            text.style.backgroundColor=game.setting.textColor;
+        trackCtx.restore();
+        trackCtx.fillRect(0,h*0.9,w,10);
+        for(i in map.note){
+            if(map.note[i]==null)continue;
+            n=map.note[i];
+            dt=(n.beat[0]+n.beat[1]/n.beat[2])*60000/bpm+startTime-time-offset;
+            if(dt<-acc.good){
+                delete map.note[i];
+            }
+            else{
+                trackCtx.fillRect(n.column*w/4,h*0.9-dt*h/1000,w/4,10);
+            }
         }
-        if(game.setting.fontSize!=null){
-            text.style.fontSize=w*game.setting.fontSize+"px";
-        }
+        trackCtx.font="50px arial";
+        trackCtx.fillText(eval,w/2,h/2);
+        trackCtx.fillText(combo,w/2,h/2+50);
+        requestAnimationFrame(draw);
     }
-    function run(){
-        if(ask)return;
-        while(1){
-            if(step==scene.length)break;
-            w=scene[step];
-            step++;
-            if (w.constructor==Function)w=w();
-            if(w==null);
-            else if(w.constructor==String){
-                if(w[0]=="#"){
-                    back.style.backgroundImage="url("+game.background[w.substr(1)]+")";
+    for(i of trackAreaDOM){
+        i.addEventListener("touchstart",function(){
+            col=parseInt(this.id);
+            trackDown[col]=true;
+            for(i in map.note){
+                n=map.note[i];
+                if(n==null)continue;
+                if(n.column!=col)continue;
+                dt=(n.beat[0]+n.beat[1]/n.beat[2])*60000/bpm+startTime-T-offset;
+                if(dt>acc.miss)break;
+                delete map.note[i];
+                if(dt>acc.good){
+                    combo=0;
+                    eval="miss";
                 }
-                else if(w[0]=="@"){
-                    if(w.substr(1)=="null"){
-                         img.style.display="none";
-                    }
-                    else{
-                        img.style.display="block";
-                        img.src=game.character[w.substr(1)].image;
-                    }
+                else if(dt>acc.cool||dt<-acc.cool){
+                    combo++;
+                    eval="good";
+                }
+                else if(dt>acc.best||dt<-acc.best){
+                    combo++;
+                    eval="cool";
                 }
                 else{
-                    text.innerHTML=w;
-                    break;
+                    combo++;
+                    eval="best";
                 }
-            }
-            else if(w.constructor==Array){
-                text.innerHTML="";
-                id=0;
-                event=[];
-                for(i in w){
-                    if(w[i][1]=="null"||w[i][1]==null){
-                        text.innerHTML+="<button class='large blue button' id='button"+id+"' onclick='ask=0;'>"+w[i][0]+"</button>";
-                    }
-                    else if(w[i][1].constructor==Function){
-                        text.innerHTML+="<button class='large blue button' id='button"+id+"' onclick='ask=0;'>"+w[i][0]+"</button>";
-                        event.push([i,w[i][1]]);
-                    }
-                    else{
-                        text.innerHTML+="<button class='large blue button' id='button"+id+"' onclick='scene=game.scene."+w[i][1]+";step=0;ask=0;'>"+w[i][0]+"</button>";
-                    }
-                    id++;
-                }
-                for(i in event){
-                    document.getElementById("button"+event[i][0]).addEventListener("click",event[i][1]); 
-                }
-                ask=1;
                 break;
             }
-        }
+        });
+        i.addEventListener("touchend",function(){
+            trackDown[parseInt(this.id)]=false;
+        });
     }
-    back=document.getElementById("back");
-    img=document.getElementById("img");
-    text=document.getElementById("text");
-    w=document.body.clientWidth*0.95;
-    h=w*3/4;
-    imgN=0;
-    if(h>document.body.clientHeight*0.95){
-        h=document.body.clientHeight*0.95;
-        w=h*4/3;
-    }
-    back.style.width=w+"px";
-    back.style.height=h+"px";
-    img.style.width=w/6+"px";
-    img.style.height=w/3+"px";
-    text.style.width=w+"px";
-    text.style.height=h/3+"px";
-    text.style.fontSize=w/25+"px";
-    scene=null;
-    step=0;
-    ask=0;
-    setting();
-    back.addEventListener("click",run);
-    game.goto=function(s,p=0){
-        scene=game.scene[s];
-        step=p;
-    }
-    game.getD=function(s){
-        r=s.split("d");
-        return Rnd(parseInt(r[0]),parseInt(r[1]));
-    }
-    loadAndRun();
+    startDOM.addEventListener("touchend",function(){
+        startDOM.style.display="none";
+        gameDOM.style.display="block";
+        musicDOM.play();
+        requestAnimationFrame(draw);
+    });
+    
 </script>

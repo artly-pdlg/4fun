@@ -161,11 +161,18 @@
             trackDown[parseInt(this.id)]=false;
         });
     }
-    startDOM.addEventListener("touchend",function(){
+    function onStart(){
         startDOM.style.display="none";
         gameDOM.style.display="block";
         musicDOM.play();
         requestAnimationFrame(draw);
+    }
+    function onStartUnable(){
+        alert("loading...");
+    }
+    startDOM.addEventListener("touchend",onStartUnable);
+    musicDOM.addEventListener("canplaythrough",function(){
+        //startDOM.removeEventListener("touchend",onStartUnable);
+        //startDOM.addEventListener("touchend",onStart);
     });
-    
 </script>

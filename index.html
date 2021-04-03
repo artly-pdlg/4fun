@@ -172,7 +172,7 @@
     }
     startDOM.addEventListener("touchend",onStartUnable);
     musicDOM.addEventListener("canplaythrough",function(){
-        //startDOM.removeEventListener("touchend",onStartUnable);
-        //startDOM.addEventListener("touchend",onStart);
+        startDOM.removeEventListener("touchend",onStartUnable);
+        startDOM.addEventListener("touchend",onStart);
     });
 </script>

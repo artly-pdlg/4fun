@@ -80,6 +80,9 @@
     mainDOM.style.height=h;
     trackDOM.width=w;
     trackDOM.height=h;
+    getElementsByTagName("body").addEventListener("touchmove",function(e){
+        e.preventDefault();
+    });
     acc={
             "best":51,
             "cool":76,

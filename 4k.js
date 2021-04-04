@@ -206,7 +206,7 @@ function ready(){
             if(n==null)continue;
             if(n.endbeat==null){
                 if(checkNote(i))continue;
-                n.shape.y=h*0.9-dt*h/speed;
+                n.shape.y=h*0.9-dt*h/speed-h/30;
                 if(n.shape.y<0)break;
                 if(i>=noteAdded){
                     noteContainer.addChild(n.shape);
@@ -215,7 +215,7 @@ function ready(){
             }
             else{
                 if(checkLongNote(i))continue;
-                n.shape.y=h*0.9-dt1*h/speed;
+                n.shape.y=h*0.9-dt1*h/speed-h/30;
                 y0=h*0.9-dt0*h/speed;
                 if(y0<0)break;
                 if(i>=noteAdded){

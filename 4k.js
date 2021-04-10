@@ -1,3 +1,15 @@
+function load(){
+    //new VConsole();
+    createjs.Sound.registerPlugins([createjs.HTMLAudioPlugin]);
+    queue=new createjs.LoadQueue(false);
+    queue.installPlugin(createjs.Sound);
+    loadComplete=false;
+    queue.on("complete",(e)=>{
+     loadComplete=true;
+    },this);
+    queue.loadManifest([{id:"sound",src:"music.ogg"}]);
+    queue.load();
+}
 function checkLongNote(i){
     n=map.note[i];
     b0=n.beat[0]+n.beat[1]/n.beat[2];
@@ -131,11 +143,12 @@ function addNoteContainer(){
     stage.addChild(noteContainer);
 }
 function start4K(setting){
+    load();
     init(setting);
     shapeNote();
     addNoteContainer();
     addCheckLine();
-    ready();
+    ready(setting);
 }
 function stageAddEventListener(){
     stage.addEventListener("stagemousedown",(e)=>{
@@ -183,7 +196,7 @@ function stageAddEventListener(){
         }
     });
 }
-function ready(){
+function ready(setting){
     readyText=new createjs.Text("READY","50px Arial","black");
     readyText.x=w/2;
     readyText.y=h/4;
@@ -195,10 +208,15 @@ function ready(){
     stage.addChild(readyText);
     stage.update();
     readyText.addEventListener("click",(e)=>{
+        if(!loadComplete){
+            alert("loading...");
+            return;
+        }
         stage.removeChild(readyText);
         addEvalText(false);
         stageAddEventListener();
-        document.getElementById("music").play();
+        createjs.Sound.play("sound");
+        sleep(setting.delay);
         createjs.Ticker.addEventListener("tick",(e)=>{
         T=e.runTime;
         for(i=noteBegin;i<noteEnd;i++){
@@ -227,4 +245,7 @@ function ready(){
         stage.update();
     });
     });
+}
+function sleep(d){
+  for(var t=Date.now();Date.now()-t<=d;);
 }

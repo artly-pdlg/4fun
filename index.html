@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindustry代码翻译</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+        }
+
+        .codearea {
+            resize: none;
+            flex: 1;
+        }
+
+        .code {
+            height: 90%;
+            display: flex;
+        }
+    </style>
+    <script src="translate.js"></script>
+    <script src="token.js"></script>
+    <script src="buildtree.js"></script>
+    <script src="buildblock.js"></script>
+    <script src="translatetree.js"></script>
+    <script>
+        function doTranslate() {
+            var s = document.getElementById('in').value;
+            document.getElementById('out').value = translate(s);
+        }
+    </script>
+</head>
+
+<body>
+    <div class='code'>
+        <textarea id="in" class='codearea' spellcheck="false"></textarea>
+        <textarea id="out" class='codearea' spellcheck="false"></textarea>
+    </div>
+    <button onclick="doTranslate()">转换</button>
+</body>
+
+</html>

@@ -60,9 +60,9 @@ function translatetree(tree, p, code) {
                 var setp=code.length;
                 code.push('set _ARRAYBACK ');
                 [dp,index]=translatetree(args[1],p,code);
-                code.push('op mul m_'+p+' 2 '+index);
-                code.push('op add m_'+p+' m_'+p+' '+arrayp[args[0]][0]);
-                code.push('set @counter m_'+p);
+                code.push('op mul _m'+p+' 2 '+index);
+                code.push('op add _m'+p+' _m'+p+' '+arrayp[args[0]][0]);
+                code.push('set @counter _m'+p);
                 code[setp]+=code.length;
                 code.push('set '+args[2]+' _ARRAYGET');
             },
@@ -72,9 +72,9 @@ function translatetree(tree, p, code) {
                 [dp,value]=translatetree(args[2],p,code);
                 code.push('set _ARRAYSET '+value);
                 [dp,index]=translatetree(args[1],p,code);
-                code.push('op mul m_'+p+' 2 '+index);
-                code.push('op add m_'+p+' m_'+p+' '+arrayp[args[0]][1]);
-                code.push('set @counter m_'+p);
+                code.push('op mul _m'+p+' 2 '+index);
+                code.push('op add _m'+p+' _m'+p+' '+arrayp[args[0]][1]);
+                code.push('set @counter _m'+p);
                 code[setp]+=code.length;
             },
         };

@@ -37,9 +37,17 @@
     <script src="translatetree.js"></script>
     <script src="argstolist.js"></script>
     <script>
+        var islinenumber=false;
         function doTranslate() {
             var s = document.getElementById('in').value;
             document.getElementById('out').value = translate(s);
+        }
+        function changelinenumber(){
+            var c=document.getElementById('changelinenumber');
+            if(!islinenumber)c.innerText='隐藏行号';
+            else c.innerText='显示行号';
+            islinenumber=!islinenumber;
+            doTranslate();
         }
     </script>
 </head>
@@ -50,6 +58,7 @@
         <textarea id="out" class='codearea' spellcheck="false"></textarea>
     </div>
     <button onclick="doTranslate()">转换</button>
+    <button onclick="changelinenumber()" id='changelinenumber'>显示行号</button>
 </body>
 
 </html>

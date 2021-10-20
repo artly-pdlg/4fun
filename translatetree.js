@@ -1,5 +1,6 @@
 var arrayp={};
 function translatetree(tree, p, code) {
+    if(tree==null)return [p,null];
     var dp = p;
     if (typeof (tree) == 'string') {
         return [p,tree];

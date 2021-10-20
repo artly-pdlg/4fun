@@ -4,6 +4,7 @@ function buildtree(words) {
     var e = words.length;
     var tree = {};
     var oplist = [
+        [','],
         ['='],
         ['||'],
         ['&&'],

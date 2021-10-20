@@ -9,5 +9,6 @@ function translate(s) {
     code = [];
     translatetree(tree, 0,code);
     code.push('end');
+    //for(i in code)code[i]=i+': '+code[i];
    return code.join('\n');
 }

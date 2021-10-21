@@ -1,13 +1,18 @@
 function translate(s) {
-    var words = token(s);
-    console.log(words);
-    words.push('}');
-    words.unshift('{');
+    var words;
     var tree;
-    tree = buildblock(words, 0)[0];
-    console.log(tree);
-    code = [];
-    translatetree(tree, 0, code);
+    var code = [];
+    try {
+        words = token(s);
+        console.log(words);
+        words.push('}');
+        words.unshift('{');
+        tree = buildblock(words, 0)[0];
+        console.log(tree);
+        translatetree(tree, 0, code);
+    } catch (e) {
+        return e;
+    }
     code.push('end');
     if (islinenumber) for (i in code) code[i] = i + ': ' + code[i];
     return code.join('\n');

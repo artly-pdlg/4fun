@@ -12,12 +12,14 @@ function token(s) {
         var ns = '';
         s += ' ';
         for (i of s) {
+            if(pl.length==0)throw '非法的字符:'+ns;
             pl2 = pl.filter(x => x[p] == i);
             if (pl2.length == 0) {
+                if(!l.includes(ns))throw '非法的字符:'+ns;
                 words.push(ns);
-                p = 0;
+                p = 1;
                 ns = i;
-                pl = l.filter(x => x[p] == i);
+                pl = l.filter(x => x[0] == i);
                 continue;
             }
             ns += i;

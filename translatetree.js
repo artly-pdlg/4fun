@@ -1,9 +1,9 @@
-var arrayp={};
+var arrayp = {};
 function translatetree(tree, p, code) {
-    if(tree==null)return [p,null];
+    if (tree == null) return [p, null];
     var dp = p;
     if (typeof (tree) == 'string') {
-        return [p,tree];
+        return [p, tree];
     }
     if (tree instanceof Array) {
         for (i of tree)
@@ -42,41 +42,41 @@ function translatetree(tree, p, code) {
             radar: (args, p, code) => {
                 code.push('radar ' + args.join(' '));
             },
-            newArray:(args,p,code)=>{
-                var name=args[0];
-                var size=parseInt(args[1]);
-                code.push('set @counter '+(size*4+1+code.length));
-                arrayp[name]=[code.length,code.length+size*2];
-                for(var i=0;i<size;i++){
-                    code.push('set _ARRAYGET '+'_a'+name+i);
+            newArray: (args, p, code) => {
+                var name = args[0];
+                var size = parseInt(args[1]);
+                code.push('set @counter ' + (size * 4 + 1 + code.length));
+                arrayp[name] = [code.length, code.length + size * 2];
+                for (var i = 0; i < size; i++) {
+                    code.push('set _ARRAYGET ' + '_a' + name + i);
                     code.push('set @counter _ARRAYBACK');
                 }
-                for(var i=0;i<size;i++){
-                    code.push('set _a'+name+i+' _ARRAYSET');
+                for (var i = 0; i < size; i++) {
+                    code.push('set _a' + name + i + ' _ARRAYSET');
                     code.push('set @counter _ARRAYBACK');
                 }
-                
+
             },
-            getArray:(args,p,code)=>{
-                var setp=code.length;
+            getArray: (args, p, code) => {
+                var setp = code.length;
                 code.push('set _ARRAYBACK ');
-                [dp,index]=translatetree(args[1],p,code);
-                code.push('op mul _m'+p+' 2 '+index);
-                code.push('op add _m'+p+' _m'+p+' '+arrayp[args[0]][0]);
-                code.push('set @counter _m'+p);
-                code[setp]+=code.length;
-                code.push('set '+args[2]+' _ARRAYGET');
+                [dp, index] = translatetree(args[1], p, code);
+                code.push('op mul _m' + p + ' 2 ' + index);
+                code.push('op add _m' + p + ' _m' + p + ' ' + arrayp[args[0]][0]);
+                code.push('set @counter _m' + p);
+                code[setp] += code.length;
+                code.push('set ' + args[2] + ' _ARRAYGET');
             },
-            setArray:(args,p,code)=>{
-                var setp=code.length;
+            setArray: (args, p, code) => {
+                var setp = code.length;
                 code.push('set _ARRAYBACK ');
-                [dp,value]=translatetree(args[2],p,code);
-                code.push('set _ARRAYSET '+value);
-                [dp,index]=translatetree(args[1],p,code);
-                code.push('op mul _m'+p+' 2 '+index);
-                code.push('op add _m'+p+' _m'+p+' '+arrayp[args[0]][1]);
-                code.push('set @counter _m'+p);
-                code[setp]+=code.length;
+                [dp, value] = translatetree(args[2], p, code);
+                code.push('set _ARRAYSET ' + value);
+                [dp, index] = translatetree(args[1], p, code);
+                code.push('op mul _m' + p + ' 2 ' + index);
+                code.push('op add _m' + p + ' _m' + p + ' ' + arrayp[args[0]][1]);
+                code.push('set @counter _m' + p);
+                code[setp] += code.length;
             },
         };
         var args = argstolist(tree.args);
@@ -142,7 +142,7 @@ function translatetree(tree, p, code) {
             '~': 'not'
         };
         if (tree.op == '=') {
-            [_,l] =translatetree(tree.l,p,code);
+            [_, l] = translatetree(tree.l, p, code);
             [dp, r] = translatetree(tree.r, p, code);
             code.push('set ' + l + ' ' + r);
             return [p, l];
@@ -155,6 +155,12 @@ function translatetree(tree, p, code) {
         }
         if (tree.op == '||') {
             return [p, null];
+        }
+        if (tree.op == '~') {
+            [dp, r] = translatetree(tree.r, dp, code);
+            code.push('op ' + opstr[tree.op] + ' _m' + p + ' ' + r);
+            p++;
+            return [p, '_m' + (p - 1)];
         }
         [dp, l] = translatetree(tree.l, dp, code);
         [dp, r] = translatetree(tree.r, dp, code);

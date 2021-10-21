@@ -7,7 +7,9 @@ function translate(s) {
         console.log(words);
         words.push('}');
         words.unshift('{');
-        tree = buildblock(words, 0)[0];
+        var e;
+        [tree,e] = buildblock(words, 0);
+        if(e!=words.length)throw '大括号未匹配';
         console.log(tree);
         translatetree(tree, 0, code);
     } catch (e) {

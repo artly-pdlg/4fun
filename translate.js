@@ -16,6 +16,5 @@ function translate(s) {
         return e;
     }
     code.push('end');
-    if (islinenumber) for (i in code) code[i] = i + ': ' + code[i];
-    return code.join('\n');
+    return code;
 }

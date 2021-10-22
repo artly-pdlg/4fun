@@ -148,13 +148,34 @@ function translatetree(tree, p, code) {
             return [p, l];
         }
         if (tree.op == '!==') {
-            return [p, null];
+            code.push('set _m'+p+' false');
+            p++;
+            dp=p;
+            [dp, l] = translatetree(tree.l, dp, code);
+            [dp, r] = translatetree(tree.r, dp, code);
+            code.push('jump '+(code.length+2)+' strictEqual '+l+' '+r);
+            code.push('set _m'+(p-1)+' true');
+            return [p, '_m'+(p-1)];
         }
         if (tree.op == '!') {
-            return [p, null];
+            code.push('set _m'+p+' true');
+            p++;
+            [dp, r] = translatetree(tree.r, p, code);
+            code.push('jump '+(code.length+2)+' equal '+r+' false');
+            code.push('set _m'+(p-1)+' false');
+            return [p, '_m'+(p-1)];
         }
         if (tree.op == '||') {
-            return [p, null];
+            code.push('set _m'+p+' true');
+            p++;
+            [dp, l] = translatetree(tree.l, p, code);
+            var jumpp=code.length;
+            code.push('jump  equal '+l+' true');
+            [dp, r] = translatetree(tree.r, p, code);
+            code.push('jump '+(code.length+2)+' equal '+r+' true');
+            code.push('set _m'+(p-1)+' false');
+            code[jumpp]=code[jumpp].slice(0,5)+code.length+code[jumpp].slice(5);
+            return [p, '_m'+(p-1)];
         }
         if (tree.op == '~') {
             [dp, r] = translatetree(tree.r, dp, code);

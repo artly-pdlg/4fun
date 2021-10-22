@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mindustry代码翻译 v0.02</title>
+    <title>Mindustry代码翻译 v0.03</title>
     <style>
         * {
             margin: 0;
@@ -37,17 +37,33 @@
     <script src="translatetree.js"></script>
     <script src="argstolist.js"></script>
     <script>
-        var islinenumber=false;
+        var islinenumber = false;
+        var code = [];
         function doTranslate() {
             var s = document.getElementById('in').value;
-            document.getElementById('out').value = translate(s);
+            code = translate(s);
+            printcode();
         }
-        function changelinenumber(){
-            var c=document.getElementById('changelinenumber');
-            if(!islinenumber)c.innerText='隐藏行号';
-            else c.innerText='显示行号';
-            islinenumber=!islinenumber;
-            doTranslate();
+        function changelinenumber() {
+            var c = document.getElementById('changelinenumber');
+            if (!islinenumber) c.innerText = '隐藏行号';
+            else c.innerText = '显示行号';
+            islinenumber = !islinenumber;
+            printcode();
+        }
+        function printcode() {
+            var outdom=document.getElementById('out');
+            if(typeof(code)=='string'){
+                outdom.value=code;
+                return;
+            }
+            outdom.value = '';
+            if (islinenumber) {
+                for (i in code) outdom.value += i + ': ' + code[i]+'\n';
+            }
+            else{
+                for (i in code) outdom.value +=code[i]+'\n';
+            }
         }
     </script>
 </head>

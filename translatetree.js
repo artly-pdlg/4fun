@@ -72,6 +72,7 @@ function translatetree(tree, p, code) {
             dodefaultf(tree.name, args, p, code);
             return [p, null];
         }
+        throw '未定义的函数'+tree.name;
     }
     if (tree.type == 'while') {
         var cod;

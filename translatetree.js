@@ -11,37 +11,20 @@ function translatetree(tree, p, code) {
         return [p, null];
     }
     if (tree.type == 'call') {
-        var defaultf = {
-            read: (args, p, code) => {
-                code.push('read ' + args.join(' '));
-            },
-            write: (args, p, code) => {
-                code.push('write ' + args.join(' '));
-            },
-            print: (args, p, code) => {
-                code.push('print ' + args.join(' '));
-            },
-            printflush: (args, p, code) => {
-                code.push('printflush ' + args.join(' '));
-            },
-            drawflush: (args, p, code) => {
-                code.push('drawflush ' + args.join(' '));
-            },
-            draw: (args, p, code) => {
-                code.push('draw ' + args.join(' '));
-            },
-            control: (args, p, code) => {
-                code.push('control ' + args.join(' '));
-            },
-            sensor: (args, p, code) => {
-                code.push('sensor ' + args.join(' '));
-            },
-            getlink: (args, p, code) => {
-                code.push('getlink ' + args.join(' '));
-            },
-            radar: (args, p, code) => {
-                code.push('radar ' + args.join(' '));
-            },
+        function dodefaultf(name, args, p, code) {
+            var dp = p;
+            var argsm = [];
+            console.log(args);
+            for (i of args) {
+                var arg;
+                [dp,arg]=translatetree(i,dp,code);
+                argsm.push(arg);
+            }
+            code.push(name+' '+argsm.join(' '));
+        }
+        var defaultf = ['read', 'write', 'print', 'printflush', 'drawflush', 'draw',
+            'control', 'sensor', 'getlink', 'radar', 'ubind','unitControl','unitRadar','unitLocate'];
+        var definedf = {
             newArray: (args, p, code) => {
                 var name = args[0];
                 var size = parseInt(args[1]);
@@ -81,11 +64,14 @@ function translatetree(tree, p, code) {
         };
         var args = argstolist(tree.args);
         var i;
-        if (tree.name in defaultf) {
-            defaultf[tree.name](args, p, code);
+        if (tree.name in definedf) {
+            definedf[tree.name](args, p, code);
             return [p, null];
         }
-
+        if (defaultf.includes(tree.name)){
+            dodefaultf(tree.name, args, p, code);
+            return [p, null];
+        }
     }
     if (tree.type == 'while') {
         var cod;
@@ -148,34 +134,34 @@ function translatetree(tree, p, code) {
             return [p, l];
         }
         if (tree.op == '!==') {
-            code.push('set _m'+p+' false');
+            code.push('set _m' + p + ' false');
             p++;
-            dp=p;
+            dp = p;
             [dp, l] = translatetree(tree.l, dp, code);
             [dp, r] = translatetree(tree.r, dp, code);
-            code.push('jump '+(code.length+2)+' strictEqual '+l+' '+r);
-            code.push('set _m'+(p-1)+' true');
-            return [p, '_m'+(p-1)];
+            code.push('jump ' + (code.length + 2) + ' strictEqual ' + l + ' ' + r);
+            code.push('set _m' + (p - 1) + ' true');
+            return [p, '_m' + (p - 1)];
         }
         if (tree.op == '!') {
-            code.push('set _m'+p+' true');
+            code.push('set _m' + p + ' true');
             p++;
             [dp, r] = translatetree(tree.r, p, code);
-            code.push('jump '+(code.length+2)+' equal '+r+' false');
-            code.push('set _m'+(p-1)+' false');
-            return [p, '_m'+(p-1)];
+            code.push('jump ' + (code.length + 2) + ' equal ' + r + ' false');
+            code.push('set _m' + (p - 1) + ' false');
+            return [p, '_m' + (p - 1)];
         }
         if (tree.op == '||') {
-            code.push('set _m'+p+' true');
+            code.push('set _m' + p + ' true');
             p++;
             [dp, l] = translatetree(tree.l, p, code);
-            var jumpp=code.length;
-            code.push('jump  equal '+l+' true');
+            var jumpp = code.length;
+            code.push('jump  equal ' + l + ' true');
             [dp, r] = translatetree(tree.r, p, code);
-            code.push('jump '+(code.length+2)+' equal '+r+' true');
-            code.push('set _m'+(p-1)+' false');
-            code[jumpp]=code[jumpp].slice(0,5)+code.length+code[jumpp].slice(5);
-            return [p, '_m'+(p-1)];
+            code.push('jump ' + (code.length + 2) + ' equal ' + r + ' true');
+            code.push('set _m' + (p - 1) + ' false');
+            code[jumpp] = code[jumpp].slice(0, 5) + code.length + code[jumpp].slice(5);
+            return [p, '_m' + (p - 1)];
         }
         if (tree.op == '~') {
             [dp, r] = translatetree(tree.r, dp, code);

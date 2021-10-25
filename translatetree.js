@@ -1,31 +1,47 @@
 var arrayp = {};
+var functionp = {};
 function translatetree(tree, p, code) {
-    if (tree == null) return [p, null];
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
+    if (tree == null)
+        return [p, null];
     var dp = p;
     if (typeof (tree) == 'string') {
         return [p, tree];
     }
     if (tree instanceof Array) {
-        for (i of tree)
+        for (var _i = 0, tree_1 = tree; _i < tree_1.length; _i++) {
+            i = tree_1[_i];
             translatetree(i, p, code);
+        }
         return [p, null];
     }
+    /*if(tree.type=='function'){
+        code.push('set @counter ');
+        functionp[tree.name]=code.length;
+        var args = argstolist(tree.args);
+        dp++;
+        for(var i=0;i<args.length;i++){
+            
+        }
+        return [p,null];
+    }*/
     if (tree.type == 'call') {
         function dodefaultf(name, args, p, code) {
+            var _a;
             var dp = p;
             var argsm = [];
-            console.log(args);
-            for (i of args) {
+            for (var _i = 0, args_1 = args; _i < args_1.length; _i++) {
+                i = args_1[_i];
                 var arg;
-                [dp,arg]=translatetree(i,dp,code);
+                _a = translatetree(i, dp, code), dp = _a[0], arg = _a[1];
                 argsm.push(arg);
             }
-            code.push(name+' '+argsm.join(' '));
+            code.push(name + ' ' + argsm.join(' '));
         }
         var defaultf = ['read', 'write', 'print', 'printflush', 'drawflush', 'draw',
-            'control', 'sensor', 'getlink', 'radar', 'ubind','unitControl','unitRadar','unitLocate'];
+            'control', 'sensor', 'getlink', 'radar', 'ubind', 'unitControl', 'unitRadar', 'unitLocate'];
         var definedf = {
-            newArray: (args, p, code) => {
+            newArray: function (args, p, code) {
                 var name = args[0];
                 var size = parseInt(args[1]);
                 code.push('set @counter ' + (size * 4 + 1 + code.length));
@@ -38,24 +54,25 @@ function translatetree(tree, p, code) {
                     code.push('set _a' + name + i + ' _ARRAYSET');
                     code.push('set @counter _ARRAYBACK');
                 }
-
             },
-            getArray: (args, p, code) => {
+            getArray: function (args, p, code) {
+                var _a;
                 var setp = code.length;
                 code.push('set _ARRAYBACK ');
-                [dp, index] = translatetree(args[1], p, code);
+                _a = translatetree(args[1], p, code), dp = _a[0], index = _a[1];
                 code.push('op mul _m' + p + ' 2 ' + index);
                 code.push('op add _m' + p + ' _m' + p + ' ' + arrayp[args[0]][0]);
                 code.push('set @counter _m' + p);
                 code[setp] += code.length;
                 code.push('set ' + args[2] + ' _ARRAYGET');
             },
-            setArray: (args, p, code) => {
+            setArray: function (args, p, code) {
+                var _a, _b;
                 var setp = code.length;
                 code.push('set _ARRAYBACK ');
-                [dp, value] = translatetree(args[2], p, code);
+                _a = translatetree(args[2], p, code), dp = _a[0], value = _a[1];
                 code.push('set _ARRAYSET ' + value);
-                [dp, index] = translatetree(args[1], p, code);
+                _b = translatetree(args[1], p, code), dp = _b[0], index = _b[1];
                 code.push('op mul _m' + p + ' 2 ' + index);
                 code.push('op add _m' + p + ' _m' + p + ' ' + arrayp[args[0]][1]);
                 code.push('set @counter _m' + p);
@@ -68,26 +85,26 @@ function translatetree(tree, p, code) {
             definedf[tree.name](args, p, code);
             return [p, null];
         }
-        if (defaultf.includes(tree.name)){
+        if (defaultf.includes(tree.name)) {
             dodefaultf(tree.name, args, p, code);
             return [p, null];
         }
-        throw '未定义的函数'+tree.name;
+        throw '未定义的函数' + tree.name;
     }
     if (tree.type == 'while') {
         var cod;
         var pwhile = code.length;
-        [dp, cod] = translatetree(tree.condition, p, code);
+        _a = translatetree(tree.condition, p, code), dp = _a[0], cod = _a[1];
         var pjump = code.length;
         code.push('jump  equal ' + cod + ' false');
-        [dp, cod] = translatetree(tree.todo, p, code);
+        _b = translatetree(tree.todo, p, code), dp = _b[0], cod = _b[1];
         code.push('set @counter ' + pwhile);
         code[pjump] = code[pjump].slice(0, 5) + code.length + code[pjump].slice(5);
         return [p, null];
     }
     if (tree.type == 'if') {
         var cod;
-        [dp, cod] = translatetree(tree.condition, p, code);
+        _c = translatetree(tree.condition, p, code), dp = _c[0], cod = _c[1];
         var pif = code.length;
         code.push('jump  equal ' + cod + ' false');
         translatetree(tree.if, p, code);
@@ -98,7 +115,7 @@ function translatetree(tree, p, code) {
             var pelse = code.length;
             code.push('set @counter ');
             code[pif] = code[pif].slice(0, 5) + code.length + code[pif].slice(5);
-            [dp, _] = translatetree(tree.else, p, code);
+            _d = translatetree(tree.else, p, code), dp = _d[0], _ = _d[1];
             code[pelse] = code[pelse] + code.length;
         }
         return [p, null];
@@ -129,8 +146,8 @@ function translatetree(tree, p, code) {
             '~': 'not'
         };
         if (tree.op == '=') {
-            [_, l] = translatetree(tree.l, p, code);
-            [dp, r] = translatetree(tree.r, p, code);
+            _e = translatetree(tree.l, p, code), _ = _e[0], l = _e[1];
+            _f = translatetree(tree.r, p, code), dp = _f[0], r = _f[1];
             code.push('set ' + l + ' ' + r);
             return [p, l];
         }
@@ -138,8 +155,8 @@ function translatetree(tree, p, code) {
             code.push('set _m' + p + ' false');
             p++;
             dp = p;
-            [dp, l] = translatetree(tree.l, dp, code);
-            [dp, r] = translatetree(tree.r, dp, code);
+            _g = translatetree(tree.l, dp, code), dp = _g[0], l = _g[1];
+            _h = translatetree(tree.r, dp, code), dp = _h[0], r = _h[1];
             code.push('jump ' + (code.length + 2) + ' strictEqual ' + l + ' ' + r);
             code.push('set _m' + (p - 1) + ' true');
             return [p, '_m' + (p - 1)];
@@ -147,7 +164,7 @@ function translatetree(tree, p, code) {
         if (tree.op == '!') {
             code.push('set _m' + p + ' true');
             p++;
-            [dp, r] = translatetree(tree.r, p, code);
+            _j = translatetree(tree.r, p, code), dp = _j[0], r = _j[1];
             code.push('jump ' + (code.length + 2) + ' equal ' + r + ' false');
             code.push('set _m' + (p - 1) + ' false');
             return [p, '_m' + (p - 1)];
@@ -155,27 +172,26 @@ function translatetree(tree, p, code) {
         if (tree.op == '||') {
             code.push('set _m' + p + ' true');
             p++;
-            [dp, l] = translatetree(tree.l, p, code);
+            _k = translatetree(tree.l, p, code), dp = _k[0], l = _k[1];
             var jumpp = code.length;
             code.push('jump  equal ' + l + ' true');
-            [dp, r] = translatetree(tree.r, p, code);
+            _l = translatetree(tree.r, p, code), dp = _l[0], r = _l[1];
             code.push('jump ' + (code.length + 2) + ' equal ' + r + ' true');
             code.push('set _m' + (p - 1) + ' false');
             code[jumpp] = code[jumpp].slice(0, 5) + code.length + code[jumpp].slice(5);
             return [p, '_m' + (p - 1)];
         }
         if (tree.op == '~') {
-            [dp, r] = translatetree(tree.r, dp, code);
+            _m = translatetree(tree.r, dp, code), dp = _m[0], r = _m[1];
             code.push('op ' + opstr[tree.op] + ' _m' + p + ' ' + r);
             p++;
             return [p, '_m' + (p - 1)];
         }
-        [dp, l] = translatetree(tree.l, dp, code);
-        [dp, r] = translatetree(tree.r, dp, code);
+        _o = translatetree(tree.l, dp, code), dp = _o[0], l = _o[1];
+        _p = translatetree(tree.r, dp, code), dp = _p[0], r = _p[1];
         code.push('op ' + opstr[tree.op] + ' _m' + p + ' ' + l + ' ' + r);
         p++;
         return [p, '_m' + (p - 1)];
-
     }
     return code;
 }

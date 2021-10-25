@@ -46,25 +46,30 @@
         }
         function changelinenumber() {
             var c = document.getElementById('changelinenumber');
-            if (!islinenumber) c.innerText = '隐藏行号';
-            else c.innerText = '显示行号';
+            if (!islinenumber)
+                c.innerText = '隐藏行号';
+            else
+                c.innerText = '显示行号';
             islinenumber = !islinenumber;
             printcode();
         }
         function printcode() {
-            var outdom=document.getElementById('out');
-            if(typeof(code)=='string'){
-                outdom.value=code;
+            var outdom = document.getElementById('out');
+            if (typeof (code) == 'string') {
+                outdom.value = code;
                 return;
             }
             outdom.value = '';
             if (islinenumber) {
-                for (i in code) outdom.value += i + ': ' + code[i]+'\n';
+                for (i in code)
+                    outdom.value += i + ': ' + code[i] + '\n';
             }
-            else{
-                for (i in code) outdom.value +=code[i]+'\n';
+            else {
+                for (i in code)
+                    outdom.value += code[i] + '\n';
             }
         }
+
     </script>
 </head>
 

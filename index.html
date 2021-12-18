@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章生成器</title>
+</head>
+
+<body>
+    <p>主题</p>
+    <input type="text" class="input" spellcheck="false" placeholder="输入文章主题"></input>
+    <button onclick="output()">生成</button>
+    <p>输出</p>
+    <textarea class="output" rows="30" spellcheck="false" placeholder="输出的文章内容"></textarea>
+
+</body>
+<script>
+    var indom = document.getElementsByClassName('input')[0];
+    var outdom = document.getElementsByClassName('output')[0];
+    var text='破除年轻人不冲厕所“围墙心态”\n\n长期以来，年轻人不冲厕所一直是精神老大难问题，从一定意义上讲，能否彻底解决年轻人不冲厕所问题，关乎体现前提，聚焦主意，凝聚任务，拓展制度，关乎发扬会议，规范转变，改善矛盾，推动道路，是不断加强的重中之重。因此，解决年轻人不冲厕所问题，是研究问题之举。\n综观年轻人不冲厕所发展史，各国都在不断改进逐步结合点，拓展成就，吸引项目，吸纳信念，在出发点上，力求完善。以热点为例，为了年轻人不冲厕所，巴拿马政府采取了不断增强的政策，使得。鲜明的案例告诉我们，要实现年轻人不冲厕所的目的，必须在继承借鉴中发展道路，建章立制，积极推进年轻人不冲厕所管理制度化，规范办文，积极推进年轻人不冲厕所工作程序化，建立体系，积极推进年轻人不冲厕所督查正常化，注重质量，积极推进年轻人不冲厕所工作规范化，各司其职，积极推进年轻人不冲厕所工作有序化。综观年轻人不冲厕所发展史，各国都在不断改进遏制方式，规范目录，在焦点上，力求完善。以协调为例，为了年轻人不冲厕所，巴拿马政府采取了高举旗帜的政策，使得。鲜明的案例告诉我们，要实现年轻人不冲厕所的目的，必须在继承借鉴中发展氛围，求真务实，抓好年轻人不冲厕所调研工作，提高质量，做好年轻人不冲厕所信息工作，紧跟进度，抓好年轻人不冲厕所督查工作，高效规范，抓好年轻人不冲厕所文秘工作，高度负责，做好年轻人不冲厕所保密工作，协调推进，做好年轻人不冲厕所档案工作，积极稳妥，做好年轻人不冲厕所信访工作，严格要求，做好年轻人不冲厕所服务工作。\n在未来的道路上，我们必须还会遇到这样那样的矛盾和问题，必须还会遇到这样那样的困难和险阻，面对来自各方的揣测和评议，面对来自各方的要求和呼声。惟有树立明显提高的理念，用扎实推进去协调解决年轻人不冲厕所，才能在年轻人不冲厕所上取得突破，让年轻人不冲厕所共同享有人生出彩，梦想成真的机会，实现年轻人不冲厕所自由。';
+    function output() {
+        outdom.value=text.replaceAll('不冲厕所',indom.value);
+    }
+</script>
+<style>
+    textarea {
+        resize: none;
+        width: 100%;
+
+    }
+</style>
+
+</html>
